@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>РЕЗУЛЬТАТИ КЛІЄНТІВ</title>
+<style>
+:root{
+  --bg:#000;--text:#fff;--gold:#fac26e;--gold2:#fcd78e;
+  --card_a:rgba(217,8,47,1);--card_b:rgba(128,25,28,1);--card_border:#fcd78e;
+  --badge_a:rgba(240,3,6,1);--badge_b:rgba(138,2,4,1);--badge_border:#ed2427;
+  --font:Arial,Helvetica,sans-serif;--title_size:clamp(32px,6.7vw,80px);
+  --badge_size:clamp(56px,12.5vw,150px);--name_size:16px;--radius:20px;--card_w:520px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+.wrap{max-width:1200px;margin:0 auto;padding:48px 20px 40px}
+.title{font-size:var(--title_size);font-weight:900;text-transform:uppercase;line-height:1.05;text-align:center;margin:0 0 28px}
+.title .hl{color:var(--gold2)}
+.badges{text-align:center;margin:0 0 60px}
+.big{display:block;color:var(--gold);font-size:var(--badge_size);font-weight:900;text-transform:uppercase;line-height:1}
+.price{display:inline-block;margin-top:18px;padding:14px 36px;border-radius:15px;border:1px solid var(--badge_border);
+  background:linear-gradient(90deg,var(--badge_a),var(--badge_b));font-size:clamp(28px,4.5vw,48px);font-weight:900}
+.row{display:flex;flex-wrap:wrap;justify-content:center;gap:40px;margin-bottom:40px}
+.sep{width:100%;height:1px;background:var(--gold2);opacity:.4;margin:0 0 40px}
+.case{width:min(var(--card_w),100%);background:radial-gradient(circle at center,var(--card_a) 20%,var(--card_b) 100%);
+  border:1px solid var(--card_border);border-radius:var(--radius);padding:22px 20px 20px}
+.head{position:relative;background:#fff;color:#000;border-radius:var(--radius);height:80px;display:flex;align-items:center;padding:0 70px 0 84px}
+.avatar{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;
+  background:#333 center/cover no-repeat}
+.txt{flex:1;min-width:0}
+.nm,.nc{font-size:var(--name_size);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm{font-weight:700}
+.nc{font-weight:400}
+.ig{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;
+  background:radial-gradient(circle at center,var(--card_a) 20%,var(--card_b) 100%);display:flex;align-items:center;justify-content:center;color:#fff}
+.video{position:relative;margin-top:22px;width:100%;aspect-ratio:481/254;background:#222 center/cover no-repeat}
+.play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;border:0;
+  background:#000;color:#fff;font-size:24px;cursor:pointer;transition:transform .2s}
+.play:hover{transform:translate(-50%,-50%) scale(1.15)}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.empty,.hint{color:#999;font-size:14px;text-align:center}
+.admin{display:none;margin-top:60px;border-top:1px solid #333;padding-top:30px}
+.admin.on{display:block}
+.admin h2{font-size:22px;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
+.arow{display:flex;align-items:center;gap:12px;background:#151515;border:1px solid #333;border-radius:12px;padding:10px;margin-bottom:8px;cursor:grab}
+.arow.over{outline:2px dashed var(--gold2)}
+.arow.dragging{opacity:.4}
+.grip{color:#666;letter-spacing:-2px;user-select:none}
+.num{color:#888;width:28px;text-align:right}
+.thumb{width:44px;height:44px;border-radius:50%;background:#333 center/cover no-repeat;flex-shrink:0}
+.ainfo{flex:1;min-width:0}
+.ainfo b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ainfo small{color:#aaa}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--gold2);background:transparent;color:#fff;padding:10px 16px}
+button.solid{background:var(--gold2);color:#000;font-weight:700}
+button.danger{border-color:#ed2427;color:#ed2427}
+.plus{display:flex;margin:24px auto 0;width:64px;height:64px;border-radius:50%;font-size:36px;line-height:1;
+  align-items:center;justify-content:center;padding:0;background:var(--gold2);color:#000;border:0}
+.foot{text-align:center;margin-top:60px}
+.foot button{border:0;color:#444;background:none;font-size:13px;padding:6px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.box{background:#111;border:1px solid var(--gold2);border-radius:var(--radius);padding:24px;width:min(560px,100%);max-height:92vh;overflow:auto}
+.box h3{margin:0 0 16px}
+.box label{display:block;font-size:14px;color:#ccc;margin-bottom:12px}
+.box input{width:100%;margin-top:6px;padding:10px;border-radius:10px;border:1px solid #444;background:#000;color:#fff;font:inherit}
+.drops{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 16px}
+.drop{border:2px dashed #666;border-radius:12px;padding:12px;text-align:center;cursor:pointer;font-size:13px;color:#ccc;
+  min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.drop.hov{border-color:var(--gold2)}
+.drop img{max-width:100%;max-height:100px;border-radius:8px}
+.btns{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--gold2);color:#000;
+  padding:12px 20px;border-radius:12px;font-weight:700;transition:transform .3s;z-index:60}
+#toast.on{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="title">
+    <span data-t="title_main">РЕЗУЛЬТАТИ УЧНІВ</span>
+    <span class="hl" data-t="title_hl">НАЙРЕЗУЛЬТАТИВНІШОГО НАВЧАННЯ В УКРАЇНІ</span>
+    <span data-t="title_tail">З ПРОДАЖІВ ТА ЗАПУСКІВ ПОСЛУГ І ІНФОПРОДУКТІВ</span>
+  </h1>
+  <div class="badges">
+    <span class="big" data-t="badge_top">ПРОДАЖІ 24/7</span>
+    <span class="price" data-t="badge_price">77 грн</span>
+  </div>
+
+  <main id="grid"><p class="empty">Завантаження…</p></main>
+
+  <section class="admin" id="admin">
+    <h2>Адмін-панель (ЛК) <button id="logout">Вийти</button></h2>
+    <p class="hint">Перетягуйте кейси мишкою, щоб змінити порядок. Збереження автоматичне.</p>
+    <div id="adminList"></div>
+    <button class="plus" id="addBtn" title="Додати кейс">+</button>
+  </section>
+
+  <div class="foot"><button id="adminBtn">Адмін</button></div>
+</div>
+
+<div id="modal" class="modal" hidden>
+  <div class="box">
+    <h3 id="mTitle">Новий кейс</h3>
+    <label>Імʼя<input id="fName"></label>
+    <label>Ніша<input id="fNiche"></label>
+    <label>Посилання на Instagram<input id="fIg" placeholder="https://www.instagram.com/..."></label>
+    <label>YouTube (посилання або ID відео)<input id="fYt"></label>
+    <div class="drops">
+      <div class="drop" id="dPhoto" data-kind="photo"><b>Фото (аватар)</b><img id="pPhoto" hidden><span>Перетягніть або натисніть</span></div>
+      <div class="drop" id="dCover" data-kind="cover"><b>Шапка відео</b><img id="pCover" hidden><span>Перетягніть або натисніть</span></div>
+    </div>
+    <div class="btns"><button id="mCancel">Скасувати</button><button id="mSave" class="solid">Зберегти</button></div>
+  </div>
+</div>
+<input type="file" id="fileIn" accept="image/*" hidden>
+<div id="toast"></div>
+
+<script>
+// ===== НАСТРОЙКА: вставь сюда URL веб-приложения из Apps Script =====
+const API_URL = 'ВСТАВЬ_СЮДА_URL_WEB_APP';
+
+const CACHE_KEY = 'keus_cache_v1';
+const PASS_KEY = 'keus_admin_pass';
+const IG_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>';
+
+let S = { cases: [], texts: {}, styles: {}, settings: {} };
+let lastRaw = '';
+let adminOn = false, editingId = null, pendingPhoto = null, pendingCover = null, pickKind = 'photo', dragId = null;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ytId = v => {
+  if (!v) return '';
+  const m = String(v).match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{6,})/);
+  return m ? m[1] : String(v).trim();
+};
+const igUrl = v => {
+  if (!v) return '';
+  if (/^https?:/.test(v)) return v;
+  if (/instagram\.com/.test(v)) return 'https://' + v.replace(/^\/+/, '');
+  return 'https://www.instagram.com/' + v.replace(/^@/, '').replace(/\/$/, '') + '/';
+};
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => t.classList.remove('on'), 2600);
+}
+
+// ---------- JSONP (чтение, без CORS) ----------
+let jseq = 0;
+function jsonp(params) {
+  return new Promise((resolve, reject) => {
+    const name = 'keusCb' + (++jseq) + '_' + Date.now();
+    const s = document.createElement('script');
+    const done = () => { clearTimeout(timer); delete window[name]; s.remove(); };
+    const timer = setTimeout(() => { done(); reject(new Error('timeout')); }, 20000);
+    window[name] = d => { done(); resolve(d); };
+    s.onerror = () => { done(); reject(new Error('network')); };
+    s.src = API_URL + '?' + new URLSearchParams({ ...params, callback: name });
+    document.head.appendChild(s);
+  });
+}
+
+// ---------- ЗАПИСЬ (fetch no-cors, без CORS) ----------
+async function post(action, body = {}) {
+  const pass = sessionStorage.getItem(PASS_KEY) || '';
+  try {
+    await fetch(API_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action, pass, ...body })
+    });
+  } catch (e) { toast('Немає звʼязку з таблицею'); return; }
+  setTimeout(() => refresh(true), 2500);
+  setTimeout(() => refresh(true), 8000);
+}
+
+// ---------- ДАННЫЕ И ЛОКАЛЬНЫЙ КЭШ ----------
+async function refresh(force = false) {
+  try {
+    const d = await jsonp({ action: 'data' });
+    if (d.error) throw new Error(d.error);
+    const raw = JSON.stringify(d);
+    if (!force && raw === lastRaw) return;
+    lastRaw = raw;
+    S = d;
+    localStorage.setItem(CACHE_KEY, raw);
+    renderAll();
+  } catch (e) {
+    if (force) toast('Не вдалося оновити дані');
+  }
+}
+
+function renderAll() {
+  applyStyles();
+  renderTexts();
+  renderCases();
+  if (adminOn) renderAdmin();
+}
+
+function applyStyles() {
+  const root = document.documentElement.style;
+  Object.entries(S.styles || {}).forEach(([k, v]) => { if (v) root.setProperty('--' + k, v); });
+}
+
+function renderTexts() {
+  const t = S.texts || {};
+  document.querySelectorAll('[data-t]').forEach(el => {
+    if (t[el.dataset.t] !== undefined) el.textContent = t[el.dataset.t];
+  });
+  if (t.page_title) document.title = t.page_title;
+}
+
+// ---------- ПУБЛИЧНАЯ СЕТКА ----------
+function renderCases() {
+  const every = Number(S.settings?.divider_every) || 10;
+  const rows = [];
+  let buf = [];
+  (S.cases || []).forEach((c, i) => {
+    if ((i + 1) % every === 0) {
+      if (buf.length) rows.push({ items: buf.splice(0) });
+      rows.push({ items: [c], sep: true });
+      return;
+    }
+    buf.push(c);
+    if (buf.length === 2) rows.push({ items: buf.splice(0) });
+  });
+  if (buf.length) rows.push({ items: buf.splice(0) });
+
+  const loaded = !!lastRaw;
+  $('#grid').innerHTML = rows.length
+    ? rows.map(r => (r.sep ? '<div class="sep"></div>' : '') +
+        `<div class="row">${r.items.map(caseHtml).join('')}</div>`).join('')
+    : `<p class="empty">${loaded ? 'Кейсів поки немає' : 'Завантаження…'}</p>`;
+}
+
+function caseHtml(c) {
+  const ig = igUrl(c.instagram);
+  const yt = ytId(c.youtube);
+  const cover = c.cover || (yt ? `https://i.ytimg.com/vi/${yt}/hqdefault.jpg` : '');
+  return `<article class="case">
+    <div class="head">
+      <div class="avatar" style="background-image:url('${esc(c.photo)}')"></div>
+      <div class="txt"><div class="nm">${esc(c.name)}</div><div class="nc">${esc(c.niche)}</div></div>
+      ${ig ? `<a class="ig" href="${esc(ig)}" target="_blank" rel="noopener" aria-label="Instagram">${IG_SVG}</a>` : ''}
+    </div>
+    ${cover || yt ? `<div class="video" data-yt="${esc(yt)}" style="background-image:url('${esc(cover)}')">${yt ? '<button class="play" aria-label="Відтворити">▶</button>' : ''}</div>` : ''}
+  </article>`;
+}
+
+$('#grid').addEventListener('click', e => {
+  const box = e.target.closest('.video');
+  if (!box || !box.dataset.yt) return;
+  box.innerHTML = `<iframe src="https://www.youtube.com/embed/${encodeURIComponent(box.dataset.yt)}?autoplay=1&rel=0"
+    allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+  box.removeAttribute('data-yt');
+});
+
+// ---------- АДМИН-ПАНЕЛЬ (ЛК) ----------
+function renderAdmin() {
+  $('#adminList').innerHTML = S.cases.length
+    ? S.cases.map((c, i) => `<div class="arow" draggable="true" data-id="${esc(c.id)}">
+        <span class="grip">⋮⋮</span><span class="num">${i + 1}</span>
+        <div class="thumb" style="background-image:url('${esc(c.photo)}')"></div>
+        <div class="ainfo"><b>${esc(c.name)}</b><small>${esc(c.niche)}</small></div>
+        <button data-act="edit" data-id="${esc(c.id)}">Редагувати</button>
+        <button class="danger" data-act="del" data-id="${esc(c.id)}">✕</button>
+      </div>`).join('')
+    : '<p class="hint">Кейсів ще немає</p>';
+}
+
+const list = $('#adminList');
+list.addEventListener('dragstart', e => {
+  const r = e.target.closest('.arow');
+  if (!r) return;
+  dragId = r.dataset.id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', dragId);
+  r.classList.add('dragging');
+});
+list.addEventListener('dragend', () => {
+  document.querySelectorAll('.arow').forEach(x => x.classList.remove('dragging', 'over'));
+  dragId = null;
+});
+list.addEventListener('dragover', e => {
+  e.preventDefault();
+  document.querySelectorAll('.arow.over').forEach(x => x.classList.remove('over'));
+  const r = e.target.closest('.arow');
+  if (r && r.dataset.id !== dragId) r.classList.add('over');
+});
+list.addEventListener('drop', e => {
+  e.preventDefault();
+  const over = e.target.closest('.arow');
+  if (!over || !dragId || over.dataset.id === dragId) return;
+  const from = S.cases.findIndex(c => c.id === dragId);
+  const [moved] = S.cases.splice(from, 1);
+  const to = S.cases.findIndex(c => c.id === over.dataset.id);
+  S.cases.splice(to, 0, moved);
+  S.cases.forEach((c, i) => (c.order = i + 1));
+  dragId = null;
+  renderAll();
+  post('reorder', { ids: S.cases.map(c => c.id) });
+  toast('Порядок збережено');
+});
+
+list.addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]');
+  if (!b) return;
+  const c = S.cases.find(x => x.id === b.dataset.id);
+  if (!c) return;
+  if (b.dataset.act === 'edit') openModal(c);
+  if (b.dataset.act === 'del' && confirm(`Видалити кейс «${c.name}»?`)) {
+    S.cases = S.cases.filter(x => x.id !== c.id);
+    renderAll();
+    post('deleteCase', { id: c.id });
+    toast('Видалено');
+  }
+});
+
+async function enableAdmin() {
+  adminOn = true;
+  $('#admin').classList.add('on');
+  renderAll();
+}
+
+$('#adminBtn').onclick = async () => {
+  if (adminOn) return;
+  if (sessionStorage.getItem(PASS_KEY)) return enableAdmin();
+  const pass = prompt('Пароль адміністратора:');
+  if (!pass) return;
+  try {
+    const r = await jsonp({ action: 'auth', pass });
+    if (!r.ok) throw new Error('bad');
+    sessionStorage.setItem(PASS_KEY, pass);
+    enableAdmin();
+    $('#admin').scrollIntoView({ behavior: 'smooth' });
+  } catch (e) {
+    toast('Невірний пароль або немає звʼязку');
+  }
+};
+
+$('#logout').onclick = () => {
+  sessionStorage.removeItem(PASS_KEY);
+  adminOn = false;
+  $('#admin').classList.remove('on');
+};
+
+// ---------- МОДАЛКА: ДОБАВИТЬ / РЕДАКТИРОВАТЬ КЕЙС ----------
+function setPreview(kind, url) {
+  const img = $(kind === 'photo' ? '#pPhoto' : '#pCover');
+  img.src = url || '';
+  img.hidden = !url;
+}
+
+function openModal(c = null) {
+  editingId = c ? c.id : null;
+  pendingPhoto = pendingCover = null;
+  $('#mTitle').textContent = c ? 'Редагувати кейс' : 'Новий кейс';
+  $('#fName').value = c?.name || '';
+  $('#fNiche').value = c?.niche || '';
+  $('#fIg').value = c?.instagram || '';
+  $('#fYt').value = c?.youtube || '';
+  setPreview('photo', c?.photo || '');
+  setPreview('cover', c?.cover || '');
+  $('#modal').hidden = false;
+}
+
+function readImage(file, max) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(img.width * k);
+      cv.height = Math.round(img.height * k);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url);
+      res(cv.toDataURL('image/jpeg', 0.86));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('bad image')); };
+    img.src = url;
+  });
+}
+
+async function setPick(kind, file) {
+  if (!file || !file.type.startsWith('image/')) return toast('Потрібне зображення (JPG, PNG, WebP)');
+  try {
+    const data = await readImage(file, kind === 'photo' ? 600 : 1000);
+    if (kind === 'photo') pendingPhoto = data; else pendingCover = data;
+    setPreview(kind, data);
+  } catch (e) { toast('Не вдалося прочитати фото'); }
+}
+
+document.querySelectorAll('.drop').forEach(z => {
+  const kind = z.dataset.kind;
+  z.onclick = () => { pickKind = kind; $('#fileIn').click(); };
+  z.ondragover = e => { e.preventDefault(); z.classList.add('hov'); };
+  z.ondragleave = () => z.classList.remove('hov');
+  z.ondrop = e => { e.preventDefault(); z.classList.remove('hov'); setPick(kind, e.dataTransfer.files[0]); };
+});
+$('#fileIn').onchange = e => { setPick(pickKind, e.target.files[0]); e.target.value = ''; };
+
+$('#addBtn').onclick = () => openModal();
+$('#mCancel').onclick = () => ($('#modal').hidden = true);
+$('#modal').onclick = e => { if (e.target.id === 'modal') $('#modal').hidden = true; };
+
+$('#mSave').onclick = () => {
+  const name = $('#fName').value.trim();
+  if (!name) return toast('Вкажіть імʼя');
+  const old = editingId ? S.cases.find(c => c.id === editingId) : null;
+  const c = {
+    id: old ? old.id : 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    order: old ? old.order : S.cases.length + 1,
+    name,
+    niche: $('#fNiche').value.trim(),
+    instagram: $('#fIg').value.trim(),
+    youtube: $('#fYt').value.trim(),
+    photo: old?.photo || '',
+    cover: old?.cover || ''
+  };
+  const data = { ...c };
+  if (pendingPhoto) data.photoData = pendingPhoto;
+  if (pendingCover) data.coverData = pendingCover;
+
+  // сразу показываем локально, сервер подтвердит через пару секунд
+  const local = { ...c, photo: pendingPhoto || c.photo, cover: pendingCover || c.cover };
+  S.cases = old ? S.cases.map(x => (x.id === c.id ? local : x)) : [...S.cases, local];
+  $('#modal').hidden = true;
+  renderAll();
+  post('saveCase', { data });
+  toast('Зберігаю…');
+};
+
+$('#admin').addEventListener('keydown', () => {});
+
+// ---------- СТАРТ ----------
+function init() {
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (cached) {
+    try { S = JSON.parse(cached); lastRaw = cached; } catch (e) {}
+  }
+  renderAll();
+  if (sessionStorage.getItem(PASS_KEY)) enableAdmin();
+  refresh(false);
+  setInterval(() => refresh(false), 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(false); });
+}
+init();
+</script>
+</body>
+</html>
